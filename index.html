@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وردة مضيئة</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #050510; /* خلفية ليلية مظلمة */
+            overflow: hidden;
+        }
+
+        .flower {
+            position: relative;
+            width: 100px;
+            height: 200px;
+        }
+
+        /* الساق */
+        .flower__line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 150px;
+            background: linear-gradient(to top, #003300, #4CAF50);
+            border-radius: 3px;
+        }
+
+        /* بتلات الورود */
+        .flower__leafs {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+        }
+
+        .flower__leaf {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            background: linear-gradient(to top, #48cae4, #90e0ef);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 15px rgba(72, 202, 228, 0.6);
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+        }
+
+        /* توزيع البتلات بشكل دائري */
+        .flower__leaf--1 { transform: translate(-50%, -100%) rotate(0deg); }
+        .flower__leaf--2 { transform: translate(-50%, -100%) rotate(72deg); }
+        .flower__leaf--3 { transform: translate(-50%, -100%) rotate(144deg); }
+        .flower__leaf--4 { transform: translate(-50%, -100%) rotate(216deg); }
+        .flower__leaf--5 { transform: translate(-50%, -100%) rotate(288deg); }
+
+        /* مركز الوردة المضيء */
+        .flower__white-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25px;
+            height: 25px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffffff, 0 0 30px #48cae4;
+            z-index: 2;
+        }
+
+        /* إضاءة محيطة خافتة */
+        .flower__light {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(72,202,228,0.2) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: translateX(-50%) scale(0.9); opacity: 0.5; }
+            to { transform: translateX(-50%) scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flower">
+        <div class="flower__light"></div>
+        <div class="flower__line"></div>
+        <div class="flower__leafs">
+            <div class="flower__leaf flower__leaf--1"></div>
+            <div class="flower__leaf flower__leaf--2"></div>
+            <div class="flower__leaf flower__leaf--3"></div>
+            <div class="flower__leaf flower__leaf--4"></div>
+            <div class="flower__leaf flower__leaf--5"></div>
+            <div class="flower__white-circle"></div>
+        </div>
+    </div>
+
+</body>
+</html>
