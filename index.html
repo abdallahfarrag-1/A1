@@ -3,178 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flowers Animation</title>
+    <title>لعبة المرور من الأنابيب</title>
     <style>
-        *, *::after, *::before {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --dark-color: #050505;
-            --light-color: #48cae4;
-            --flower-color: #90e0ef;
-        }
-
         body {
-            background-color: var(--dark-color);
-            min-height: 100vh;
+            margin: 0;
+            background-color: #222;
             display: flex;
             justify-content: center;
-            align-items: flex-end;
+            align-items: center;
+            height: 100vh;
             overflow: hidden;
-            perspective: 1000px;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
         }
 
-        .night {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(ellipse at top, #1a1a2e 0%, var(--dark-color) 70%);
-            z-index: 1;
-        }
-
-        .flowers {
-            position: relative;
-            transform: scale(1.4);
-            bottom: 5vh;
-            z-index: 2;
-        }
-
-        .flower {
-            position: absolute;
-            bottom: 0;
-            transform-origin: bottom center;
-            z-index: 10;
-        }
-
-        .flower--1 {
-            left: 0;
-            transform: rotate(10deg);
-            animation: moving-flower-1 4s linear infinite;
-        }
-
-        /* الساق (Stem) */
-        .flower__line {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 350px;
-            background-image: linear-gradient(to top, rgba(0,0,0,0.5), #0077b6, #90e0ef);
-            border-radius: 3px;
-            transform-origin: bottom center;
-            animation: open-flower 2s 1s backwards;
-        }
-
-        /* رأس الزهرة والبتلات */
-        .flower__leafs {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            transform-origin: bottom center;
-            animation: blooming-flower 2s 2s backwards;
-        }
-
-        .flower__leaf {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 35px;
-            height: 70px;
-            background-image: linear-gradient(to top, #0077b6, var(--flower-color));
-            border-radius: 50% 50% 20% 20%;
-            transform-origin: bottom center;
-            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4);
-        }
-
-        .flower__leaf--1 { transform: translateX(-50%) rotate(-40deg); }
-        .flower__leaf--2 { transform: translateX(-50%) rotate(-13deg); }
-        .flower__leaf--3 { transform: translateX(-50%) rotate(13deg); }
-        .flower__leaf--4 { transform: translateX(-50%) rotate(40deg); }
-
-        /* الدائرة البيضاء المضيئة في المنتصف */
-        .flower__white-circle {
-            position: absolute;
-            left: 50%;
-            bottom: 45px;
-            transform: translateX(-50%);
-            width: 22px;
-            height: 22px;
-            background-color: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 15px #fff, 0 0 25px var(--light-color);
-        }
-
-        /* الإضاءات المتطايرة حول الزهرة */
-        .flower__light {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background-color: var(--light-color);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--light-color);
-            animation: light-ani 3s infinite ease-in-out;
-        }
-
-        .flower__light--1 { top: -80px; left: -25px; animation-delay: 0.3s; }
-        .flower__light--2 { top: -100px; left: 15px; animation-delay: 0.6s; }
-        .flower__light--3 { top: -60px; left: 35px; animation-delay: 0.9s; }
-        .flower__light--4 { top: -110px; left: -10px; animation-delay: 1.2s; }
-        .flower__light--5 { top: -90px; left: 25px; animation-delay: 1.5s; }
-        .flower__light--6 { top: -120px; left: -20px; animation-delay: 1.8s; }
-        .flower__light--7 { top: -75px; left: -5px; animation-delay: 2.1s; }
-
-        /* الأنيميشن الحركي */
-        @keyframes open-flower {
-            0% { transform: translateX(-50%) scaleY(0); }
-            100% { transform: translateX(-50%) scaleY(1); }
-        }
-
-        @keyframes blooming-flower {
-            0% { transform: translateX(-50%) scale(0); }
-            100% { transform: translateX(-50%) scale(1); }
-        }
-
-        @keyframes moving-flower-1 {
-            0%, 100% { transform: rotate(10deg); }
-            50% { transform: rotate(6deg); }
-        }
-
-        @keyframes light-ani {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.4); }
+        canvas {
+            border: 4px solid #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            background: linear-gradient(to bottom, #4ec0ca, #fff);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="night"></div>
-    <div class="flowers">
-        <div class="flower flower--1">
-            <div class="flower__line"></div>
-            <div class="flower__leafs">
-                <div class="flower__leaf flower__leaf--1"></div>
-                <div class="flower__leaf flower__leaf--2"></div>
-                <div class="flower__leaf flower__leaf--3"></div>
-                <div class="flower__leaf flower__leaf--4"></div>
-                <div class="flower__white-circle"></div>
-            </div>
-            
-            <div class="flower__light flower__light--1"></div>
-            <div class="flower__light flower__light--2"></div>
-            <div class="flower__light flower__light--3"></div>
-            <div class="flower__light flower__light--4"></div>
-            <div class="flower__light flower__light--5"></div>
-            <div class="flower__light flower__light--6"></div>
-            <div class="flower__light flower__light--7"></div>
-        </div>
-    </div>
+
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // إعدادات الطائر
+        let bird = {
+            x: 50,
+            y: 150,
+            width: 30,
+            height: 24,
+            gravity: 0.6,
+            lift: -10,
+            velocity: 0
+        };
+
+        // إعدادات الأنابيب
+        let pipes = [];
+        let pipeWidth = 60;
+        let pipeGap = 160;
+        let pipeSpeed = 3;
+        let frameCount = 0;
+        let score = 0;
+        let isGameOver = false;
+        let gameStarted = false;
+
+        // التحكم باللمس أو النقر
+        function jump() {
+            if (!gameStarted) {
+                gameStarted = true;
+            }
+            if (isGameOver) {
+                resetGame();
+            } else {
+                bird.velocity = bird.lift;
+            }
+        }
+
+        window.addEventListener("keydown", function(e) {
+            if (e.code === "Space" || e.code === "ArrowUp") {
+                jump();
+            }
+        });
+
+        canvas.addEventListener("click", jump);
+
+        function resetGame() {
+            bird.y = 150;
+            bird.velocity = 0;
+            pipes = [];
+            score = 0;
+            frameCount = 0;
+            isGameOver = false;
+            gameStarted = true;
+        }
+
+        function createPipe() {
+            let minHeight = 50;
+            let maxHeight = canvas.height - pipeGap - 100;
+            let height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+
+            pipes.push({
+                x: canvas.width,
+                top: height,
+                bottom: canvas.height - height - pipeGap,
+                passed: false
+            });
+        }
+
+        function update() {
+            if (!gameStarted) return;
+
+            if (!isGameOver) {
+                bird.velocity += bird.gravity;
+                bird.y += bird.velocity;
+
+                // إنشاء أنابيب جديدة
+                if (frameCount % 90 === 0) {
+                    createPipe();
+                }
+
+                // تحريك وحذف الأنابيب
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    pipes[i].x -= pipeSpeed;
+
+                    // حساب النقاط
+                    if (!pipes[i].passed && pipes[i].x + pipeWidth < bird.x) {
+                        score++;
+                        pipes[i].passed = true;
+                    }
+
+                    // كشف الاصطدام
+                    if (
+                        bird.x < pipes[i].x + pipeWidth &&
+                        bird.x + bird.width > pipes[i].x &&
+                        (bird.y < pipes[i].top || bird.y + bird.height > canvas.height - pipes[i].bottom)
+                    ) {
+                        isGameOver = true;
+                    }
+
+                    // إزالة الأنابيب التي خرجت من الشاشة
+                    if (pipes[i].x + pipeWidth < 0) {
+                        pipes.splice(i, 1);
+                    }
+                }
+
+                // اصطدام الطائر بالأرض أو السقف
+                if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
+                    isGameOver = true;
+                }
+
+                frameCount++;
+            }
+        }
+
+        function draw() {
+            // مسح الشاشة
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم الأنابيب
+            ctx.fillStyle = "#73bf2e";
+            ctx.strokeStyle = "#558022";
+            ctx.lineWidth = 3;
+            for (let i = 0; i < pipes.length; i++) {
+                // الأنبوب العلوي
+                ctx.fillRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
+                ctx.strokeRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
+
+                // الأنبوب السفلي
+                ctx.fillRect(pipes[i].x, canvas.height - pipes[i].bottom, pipeWidth, pipes[i].bottom);
+                ctx.strokeRect(pipes[i].x, canvas.height - pipes[i].bottom, pipeWidth, pipes[i].bottom);
+            }
+
+            // رسم الطائر
+            ctx.fillStyle = "#f8e71c";
+            ctx.strokeStyle = "#d0021b";
+            ctx.lineWidth = 2;
+            ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+            ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+
+            // رسم عين الطائر
+            ctx.fillStyle = "#000";
+            ctx.fillRect(bird.x + 18, bird.y + 5, 5, 5);
+
+            // رسم النقاط
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 35px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(score, canvas.width / 2, 60);
+
+            // رسالة البداية أو النهاية
+            if (!gameStarted) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 25px Arial";
+                ctx.fillText("اضغط أو المس الشاشة للبدء", canvas.width / 2, canvas.height / 2);
+            } else if (isGameOver) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 30px Arial";
+                ctx.fillText("انتهت اللعبة!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.font = "bold 20px Arial";
+                ctx.fillText("اضغط لإعادة المحاولة", canvas.width / 2, canvas.height / 2 + 30);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
 </body>
 </html>
