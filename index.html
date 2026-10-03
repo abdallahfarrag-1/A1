@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated Flowers</title>
+    <title>Flowers Animation</title>
     <style>
         *, *::after, *::before {
             padding: 0;
@@ -12,7 +12,7 @@
         }
 
         :root {
-            --dark-color: #000;
+            --dark-color: #050505;
             --light-color: #48cae4;
             --flower-color: #90e0ef;
         }
@@ -33,102 +33,133 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-image: radial-gradient(ellipse at top, transparent 0%, var(--dark-color)), radial-gradient(circle at bottom, #1b263b 0%, var(--dark-color));
+            background-image: radial-gradient(ellipse at top, #1a1a2e 0%, var(--dark-color) 70%);
             z-index: 1;
         }
 
         .flowers {
             position: relative;
-            transform: scale(1.2);
+            transform: scale(1.4);
+            bottom: 5vh;
             z-index: 2;
         }
 
         .flower {
             position: absolute;
-            bottom: 10vh;
+            bottom: 0;
             transform-origin: bottom center;
             z-index: 10;
         }
 
         .flower--1 {
+            left: 0;
+            transform: rotate(10deg);
             animation: moving-flower-1 4s linear infinite;
         }
 
+        /* الساق (Stem) */
+        .flower__line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 350px;
+            background-image: linear-gradient(to top, rgba(0,0,0,0.5), #0077b6, #90e0ef);
+            border-radius: 3px;
+            transform-origin: bottom center;
+            animation: open-flower 2s 1s backwards;
+        }
+
+        /* رأس الزهرة والبتلات */
         .flower__leafs {
-            position: relative;
-            animation: blooming-flower 2s backwards;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            transform-origin: bottom center;
+            animation: blooming-flower 2s 2s backwards;
         }
 
         .flower__leaf {
             position: absolute;
             bottom: 0;
             left: 50%;
-            width: 40px;
-            height: 80px;
+            width: 35px;
+            height: 70px;
             background-image: linear-gradient(to top, #0077b6, var(--flower-color));
             border-radius: 50% 50% 20% 20%;
             transform-origin: bottom center;
-            transform: translateX(-50%);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4);
         }
 
         .flower__leaf--1 { transform: translateX(-50%) rotate(-40deg); }
-        .flower__leaf--2 { transform: translateX(-50%) rotate(-10deg); }
-        .flower__leaf--3 { transform: translateX(-50%) rotate(20deg); }
-        .flower__leaf--4 { transform: translateX(-50%) rotate(50deg); }
+        .flower__leaf--2 { transform: translateX(-50%) rotate(-13deg); }
+        .flower__leaf--3 { transform: translateX(-50%) rotate(13deg); }
+        .flower__leaf--4 { transform: translateX(-50%) rotate(40deg); }
 
+        /* الدائرة البيضاء المضيئة في المنتصف */
         .flower__white-circle {
             position: absolute;
             left: 50%;
-            bottom: 60px;
+            bottom: 45px;
             transform: translateX(-50%);
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             background-color: #fff;
             border-radius: 50%;
-            box-shadow: 0 0 20px #fff, 0 0 35px var(--light-color);
+            box-shadow: 0 0 15px #fff, 0 0 25px var(--light-color);
         }
 
-        /* الإضاءات المتطايرة */
+        /* الإضاءات المتطايرة حول الزهرة */
         .flower__light {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background-color: var(--light-color);
             border-radius: 50%;
             box-shadow: 0 0 10px var(--light-color);
             animation: light-ani 3s infinite ease-in-out;
         }
 
-        .flower__light--1 { top: -20px; left: -30px; animation-delay: 0.2s; }
-        .flower__light--2 { top: -40px; left: 10px; animation-delay: 0.5s; }
-        .flower__light--3 { top: -10px; left: 40px; animation-delay: 0.8s; }
-        .flower__light--4 { top: -50px; left: -10px; animation-delay: 1.1s; }
-        .flower__light--5 { top: -30px; left: 30px; animation-delay: 1.4s; }
-        .flower__light--6 { top: -60px; left: -20px; animation-delay: 1.7s; }
-        .flower__light--7 { top: -45px; left: 20px; animation-delay: 2s; }
+        .flower__light--1 { top: -80px; left: -25px; animation-delay: 0.3s; }
+        .flower__light--2 { top: -100px; left: 15px; animation-delay: 0.6s; }
+        .flower__light--3 { top: -60px; left: 35px; animation-delay: 0.9s; }
+        .flower__light--4 { top: -110px; left: -10px; animation-delay: 1.2s; }
+        .flower__light--5 { top: -90px; left: 25px; animation-delay: 1.5s; }
+        .flower__light--6 { top: -120px; left: -20px; animation-delay: 1.8s; }
+        .flower__light--7 { top: -75px; left: -5px; animation-delay: 2.1s; }
 
-        @keyframes moving-flower-1 {
-            0%, 100% { transform: rotate(2deg); }
-            50% { transform: rotate(-2deg); }
+        /* الأنيميشن الحركي */
+        @keyframes open-flower {
+            0% { transform: translateX(-50%) scaleY(0); }
+            100% { transform: translateX(-50%) scaleY(1); }
         }
 
         @keyframes blooming-flower {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
+            0% { transform: translateX(-50%) scale(0); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        @keyframes moving-flower-1 {
+            0%, 100% { transform: rotate(10deg); }
+            50% { transform: rotate(6deg); }
         }
 
         @keyframes light-ani {
             0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.3); }
+            50% { opacity: 1; transform: scale(1.4); }
         }
     </style>
 </head>
-<body class="not-loaded">
+<body>
     <div class="night"></div>
     <div class="flowers">
         <div class="flower flower--1">
-            <div class="flower__leafs flower__leafs--1">
+            <div class="flower__line"></div>
+            <div class="flower__leafs">
                 <div class="flower__leaf flower__leaf--1"></div>
                 <div class="flower__leaf flower__leaf--2"></div>
                 <div class="flower__leaf flower__leaf--3"></div>
