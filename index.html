@@ -3,62 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated Blossoming Flowers</title>
+    <title>Animated Blossoming Flowers - Fullscreen</title>
     <style>
         :root {
-            --dark-color: #000;
+            --dark-color: #03030c;
             --light-color: #48cae4;
             --flower-color: #90e0ef;
-            --leaf-color: #2b9348;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             background-color: var(--dark-color);
-            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: flex-end;
             overflow: hidden;
-            margin: 0;
+            /* خلفية نجوم خفيفة لزيادة جمال الواقعية */
+            background-image: radial-gradient(white 1px, transparent 0);
+            background-size: 40px 40px;
+            background-position: -19px -19px;
         }
 
         .flowers {
             position: relative;
-            transform: scale(0.9);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
         }
 
         .flower {
             position: absolute;
-            bottom: 10px;
+            bottom: 0;
             transform-origin: bottom center;
             animation: opening-flower 2s 1s backwards;
         }
 
+        /* توزيع الزهور بحجم كبير يملأ الشاشة */
         .flower--1 {
-            left: 0;
-            transform: rotate(10deg);
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
+            z-index: 3;
         }
 
         .flower--2 {
-            left: 50px;
-            transform: rotate(-5deg);
+            left: 35%;
+            transform: translateX(-50%) rotate(-15deg);
+            z-index: 2;
         }
 
         .flower--3 {
-            left: -40px;
-            transform: rotate(20deg);
+            left: 65%;
+            transform: translateX(-50%) rotate(15deg);
+            z-index: 2;
         }
 
-        /* السيقان */
+        .flower--4 {
+            left: 22%;
+            transform: translateX(-50%) rotate(-25deg);
+            z-index: 1;
+        }
+
+        .flower--5 {
+            left: 78%;
+            transform: translateX(-50%) rotate(25deg);
+            z-index: 1;
+        }
+
+        /* السيقان الكبيرة */
         .flower__line {
-            width: 4px;
-            height: 200px;
-            background-image: linear-gradient(to top, rgba(0,0,0,0.5), #0077b6, #90e0ef);
-            border-radius: 4px;
+            width: 8px;
+            height: 450px;
+            background-image: linear-gradient(to top, rgba(0,0,0,0.8), #0077b6, #90e0ef);
+            border-radius: 6px;
             animation: grow-line 3s backwards;
         }
 
-        /* البتلات */
+        /* البتلات بالحجم الكبير */
         .flower__leafs {
             position: relative;
             animation: blooming 2s 2s backwards;
@@ -66,14 +94,14 @@
 
         .flower__leaf {
             position: absolute;
-            left: -15px;
+            left: -25px;
             bottom: 0;
-            width: 30px;
-            height: 60px;
+            width: 50px;
+            height: 100px;
             background-image: linear-gradient(to top, #0077b6, var(--flower-color));
             border-radius: 50% 50% 20% 20%;
             transform-origin: bottom center;
-            box-shadow: 0 0 10px rgba(72, 202, 228, 0.5);
+            box-shadow: 0 0 20px rgba(72, 202, 228, 0.6);
         }
 
         .flower__leaf--1 { transform: rotate(-45deg); }
@@ -81,40 +109,40 @@
         .flower__leaf--3 { transform: rotate(15deg); }
         .flower__leaf--4 { transform: rotate(45deg); }
 
-        /* مركز الزهرة الأبيض */
+        /* مركز الزهرة الأبيض الكبير */
         .flower__white-circle {
             position: absolute;
-            left: -8px;
-            bottom: 35px;
-            width: 16px;
-            height: 16px;
+            left: -14px;
+            bottom: 60px;
+            width: 28px;
+            height: 28px;
             background-color: #fff;
             border-radius: 50%;
-            box-shadow: 0 0 15px #fff, 0 0 25px var(--light-color);
+            box-shadow: 0 0 25px #fff, 0 0 40px var(--light-color);
         }
 
-        /* الأنوار المتطايرة */
+        /* الأنوار المتطايرة الكبيرة */
         .flower__light {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 10px;
+            height: 10px;
             background-color: var(--light-color);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--light-color);
+            box-shadow: 0 0 15px var(--light-color);
             animation: light-up 3s infinite ease-in-out;
         }
 
-        .flower__light--1 { top: 50px; left: -20px; animation-delay: 0.5s; }
-        .flower__light--2 { top: 30px; left: 20px; animation-delay: 1s; }
-        .flower__light--3 { top: 80px; left: 30px; animation-delay: 1.5s; }
+        .flower__light--1 { top: 150px; left: -40px; animation-delay: 0.5s; }
+        .flower__light--2 { top: 100px; left: 40px; animation-delay: 1s; }
+        .flower__light--3 { top: 200px; left: 50px; animation-delay: 1.5s; }
 
-        /* الأنيميشن والحركات */
+        /* الحركات والأنيميشن */
         @keyframes grow-line {
             0% {
                 height: 0;
             }
             100% {
-                height: 200px;
+                height: 450px; /* طول الساق الكبيرة */
             }
         }
 
@@ -129,12 +157,12 @@
 
         @keyframes light-up {
             0%, 100% {
-                opacity: 0.2;
+                opacity: 0.3;
                 transform: scale(0.8);
             }
             50% {
                 opacity: 1;
-                transform: scale(1.2);
+                transform: scale(1.4);
             }
         }
     </style>
@@ -142,9 +170,21 @@
 <body>
 
     <div class="flowers">
-        <!-- الزهرة الأولى -->
-        <div class="flower flower--1">
-            <div class="flower__line"></div>
+        <!-- الزهرة الرابعة (يسار الخفي) -->
+        <div class="flower flower--4">
+            <div class="flower__line" style="height: 350px;"></div>
+            <div class="flower__leafs">
+                <div class="flower__leaf flower__leaf--1"></div>
+                <div class="flower__leaf flower__leaf--2"></div>
+                <div class="flower__leaf flower__leaf--3"></div>
+                <div class="flower__leaf flower__leaf--4"></div>
+                <div class="flower__white-circle"></div>
+            </div>
+        </div>
+
+        <!-- الزهرة الثانية (يسار) -->
+        <div class="flower flower--2">
+            <div class="flower__line" style="height: 400px;"></div>
             <div class="flower__leafs">
                 <div class="flower__leaf flower__leaf--1"></div>
                 <div class="flower__leaf flower__leaf--2"></div>
@@ -153,12 +193,11 @@
                 <div class="flower__white-circle"></div>
             </div>
             <div class="flower__light flower__light--1"></div>
-            <div class="flower__light flower__light--2"></div>
         </div>
 
-        <!-- الزهرة الثانية -->
-        <div class="flower flower--2">
-            <div class="flower__line" style="height: 230px;"></div>
+        <!-- الزهرة الأولى (المنتصف - الأطول) -->
+        <div class="flower flower--1">
+            <div class="flower__line" style="height: 480px;"></div>
             <div class="flower__leafs">
                 <div class="flower__leaf flower__leaf--1"></div>
                 <div class="flower__leaf flower__leaf--2"></div>
@@ -166,12 +205,13 @@
                 <div class="flower__leaf flower__leaf--4"></div>
                 <div class="flower__white-circle"></div>
             </div>
+            <div class="flower__light flower__light--2"></div>
             <div class="flower__light flower__light--3"></div>
         </div>
 
-        <!-- الزهرة الثالثة -->
+        <!-- الزهرة الثالثة (يمين) -->
         <div class="flower flower--3">
-            <div class="flower__line" style="height: 170px;"></div>
+            <div class="flower__line" style="height: 420px;"></div>
             <div class="flower__leafs">
                 <div class="flower__leaf flower__leaf--1"></div>
                 <div class="flower__leaf flower__leaf--2"></div>
@@ -180,6 +220,18 @@
                 <div class="flower__white-circle"></div>
             </div>
             <div class="flower__light flower__light--1"></div>
+        </div>
+
+        <!-- الزهرة الخامسة (يمين الخفي) -->
+        <div class="flower flower--5">
+            <div class="flower__line" style="height: 360px;"></div>
+            <div class="flower__leafs">
+                <div class="flower__leaf flower__leaf--1"></div>
+                <div class="flower__leaf flower__leaf--2"></div>
+                <div class="flower__leaf flower__leaf--3"></div>
+                <div class="flower__leaf flower__leaf--4"></div>
+                <div class="flower__white-circle"></div>
+            </div>
         </div>
     </div>
 
