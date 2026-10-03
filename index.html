@@ -3,58 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة المرور من الأنابيب</title>
+    <title>لعبة المرور من الأنابيب - النسخة الواقعية</title>
     <style>
         body {
             margin: 0;
-            background-color: #222;
+            background-color: #0b0f19;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             touch-action: manipulation;
         }
 
         canvas {
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            background: linear-gradient(to bottom, #4ec0ca, #fff);
+            border: 4px solid #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(to bottom, #1e3a8a, #3b82f6, #93c5fd);
             cursor: pointer;
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <canvas id="gameCanvas" width="600" height="700"></canvas>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // إعدادات الطائر
+        // إعدادات الطائر (بحجم وسكيل أوسع)
         let bird = {
-            x: 50,
-            y: 150,
-            width: 30,
-            height: 24,
-            gravity: 0.6,
-            lift: -10,
-            velocity: 0
+            x: 100,
+            y: 250,
+            width: 40,
+            height: 30,
+            gravity: 0.5,
+            lift: -8.5,
+            velocity: 0,
+            rotation: 0
         };
 
-        // إعدادات الأنابيب
         let pipes = [];
-        let pipeWidth = 60;
-        let pipeGap = 160;
+        let pipeWidth = 75;
+        let pipeGap = 200; // مسافة أوسع بين الأنابيب لتسهيل اللعب مع الرؤية الأوسع
         let pipeSpeed = 3;
         let frameCount = 0;
         let score = 0;
         let isGameOver = false;
         let gameStarted = false;
 
-        // التحكم باللمس أو النقر
         function jump() {
             if (!gameStarted) {
                 gameStarted = true;
@@ -68,6 +70,7 @@
 
         window.addEventListener("keydown", function(e) {
             if (e.code === "Space" || e.code === "ArrowUp") {
+                e.preventDefault();
                 jump();
             }
         });
@@ -75,8 +78,9 @@
         canvas.addEventListener("click", jump);
 
         function resetGame() {
-            bird.y = 150;
+            bird.y = 250;
             bird.velocity = 0;
+            bird.rotation = 0;
             pipes = [];
             score = 0;
             frameCount = 0;
@@ -85,8 +89,8 @@
         }
 
         function createPipe() {
-            let minHeight = 50;
-            let maxHeight = canvas.height - pipeGap - 100;
+            let minHeight = 80;
+            let maxHeight = canvas.height - pipeGap - 150;
             let height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
 
             pipes.push({
@@ -104,38 +108,36 @@
                 bird.velocity += bird.gravity;
                 bird.y += bird.velocity;
 
-                // إنشاء أنابيب جديدة
-                if (frameCount % 90 === 0) {
+                // زاوية ميلان واقعية للطائر حسب الحركة
+                bird.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (bird.velocity / 10)));
+
+                if (frameCount % 110 === 0) {
                     createPipe();
                 }
 
-                // تحريك وحذف الأنابيب
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     pipes[i].x -= pipeSpeed;
 
-                    // حساب النقاط
                     if (!pipes[i].passed && pipes[i].x + pipeWidth < bird.x) {
                         score++;
                         pipes[i].passed = true;
                     }
 
-                    // كشف الاصطدام
+                    // كشف الاصطدام بدقة مع حجم الطائر
                     if (
-                        bird.x < pipes[i].x + pipeWidth &&
-                        bird.x + bird.width > pipes[i].x &&
-                        (bird.y < pipes[i].top || bird.y + bird.height > canvas.height - pipes[i].bottom)
+                        bird.x + bird.width - 5 > pipes[i].x &&
+                        bird.x + 5 < pipes[i].x + pipeWidth &&
+                        (bird.y + 5 < pipes[i].top || bird.y + bird.height - 5 > canvas.height - pipes[i].bottom)
                     ) {
                         isGameOver = true;
                     }
 
-                    // إزالة الأنابيب التي خرجت من الشاشة
                     if (pipes[i].x + pipeWidth < 0) {
                         pipes.splice(i, 1);
                     }
                 }
 
-                // اصطدام الطائر بالأرض أو السقف
-                if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
+                if (bird.y + bird.height >= canvas.height - 30 || bird.y <= 0) {
                     isGameOver = true;
                 }
 
@@ -144,55 +146,131 @@
         }
 
         function draw() {
-            // مسح الشاشة
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // خلفية السماء والجو الواقعي
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, "#0f172a");
+            skyGrad.addColorStop(0.5, "#1e3a8a");
+            skyGrad.addColorStop(1, "#60a5fa");
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // رسم الأنابيب
-            ctx.fillStyle = "#73bf2e";
-            ctx.strokeStyle = "#558022";
-            ctx.lineWidth = 3;
+            // رسم الشمس المضيئة في الخلفية
+            ctx.fillStyle = "rgba(255, 255, 220, 0.2)";
+            ctx.beginPath();
+            ctx.arc(480, 120, 70, 0, Math.PI * 2);
+            ctx.fill();
+
+            // رسم الأنابيب الواقعية (مع تأثير التدرج واللمعان المعدني)
             for (let i = 0; i < pipes.length; i++) {
+                let p = pipes[i];
+
+                // تدرج لون الأنابيب (أخضر عشبى غني مع حواف واقعية)
+                let pipeGrad = ctx.createLinearGradient(p.x, 0, p.x + pipeWidth, 0);
+                pipeGrad.addColorStop(0, "#15803d");
+                pipeGrad.addColorStop(0.3, "#22c55e");
+                pipeGrad.addColorStop(0.7, "#16a34a");
+                pipeGrad.addColorStop(1, "#14532d");
+
+                ctx.fillStyle = pipeGrad;
+                ctx.strokeStyle = "#052e16";
+                ctx.lineWidth = 2;
+
                 // الأنبوب العلوي
-                ctx.fillRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
-                ctx.strokeRect(pipes[i].x, 0, pipeWidth, pipes[i].top);
+                ctx.fillRect(p.x, 0, pipeWidth, p.top);
+                ctx.strokeRect(p.x, 0, pipeWidth, p.top);
+                // حافة الأنبوب العلوي العريضة
+                ctx.fillRect(p.x - 4, p.top - 25, pipeWidth + 8, 25);
+                ctx.strokeRect(p.x - 4, p.top - 25, pipeWidth + 8, 25);
 
                 // الأنبوب السفلي
-                ctx.fillRect(pipes[i].x, canvas.height - pipes[i].bottom, pipeWidth, pipes[i].bottom);
-                ctx.strokeRect(pipes[i].x, canvas.height - pipes[i].bottom, pipeWidth, pipes[i].bottom);
+                let bottomY = canvas.height - p.bottom;
+                ctx.fillRect(p.x, bottomY, pipeWidth, p.bottom);
+                ctx.strokeRect(p.x, bottomY, pipeWidth, p.bottom);
+                // حافة الأنبوب السفلي العريضة
+                ctx.fillRect(p.x - 4, bottomY, pipeWidth + 8, 25);
+                ctx.strokeRect(p.x - 4, bottomY, pipeWidth + 8, 25);
             }
 
-            // رسم الطائر
-            ctx.fillStyle = "#f8e71c";
-            ctx.strokeStyle = "#d0021b";
+            // رسم الأرضية الواقعية المتحركة/الثابتة في الأسفل
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            ctx.fillStyle = "#16a34a";
+            ctx.fillRect(0, canvas.height - 30, canvas.width, 10);
+
+            // رسم الطائر الواقعي
+            ctx.save();
+            ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
+            ctx.rotate(bird.rotation);
+
+            // جسم الطائر (تدرج أصفر برتقالي دافئ)
+            let birdGrad = ctx.createRadialGradient(-5, -5, 5, 0, 0, 25);
+            birdGrad.addColorStop(0, "#fde047");
+            birdGrad.addColorStop(0.7, "#eab308");
+            birdGrad.addColorStop(1, "#ca8a04");
+            ctx.fillStyle = birdGrad;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, bird.width / 2, bird.height / 2, 0, 0, Math.PI * 2);
+            ctx.fill();
             ctx.lineWidth = 2;
-            ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-            ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+            ctx.strokeStyle = "#854d0e";
+            ctx.stroke();
 
-            // رسم عين الطائر
-            ctx.fillStyle = "#000";
-            ctx.fillRect(bird.x + 18, bird.y + 5, 5, 5);
+            // جناح الطائر
+            ctx.fillStyle = "#facc15";
+            ctx.beginPath();
+            ctx.ellipse(-5, 4, 10, 6, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
 
-            // رسم النقاط
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 35px Arial";
+            // عين الطائر الواقعية
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(8, -5, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            ctx.arc(10, -5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // منقار الطائر
+            ctx.fillStyle = "#f97316";
+            ctx.beginPath();
+            ctx.moveTo(16, -3);
+            ctx.lineTo(26, 1);
+            ctx.lineTo(16, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+
+            // رسم النقاط بأسلوب أنيق
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+            ctx.shadowBlur = 6;
+            ctx.font = "bold 45px 'Segoe UI', Tahoma";
             ctx.textAlign = "center";
-            ctx.fillText(score, canvas.width / 2, 60);
+            ctx.fillText(score, canvas.width / 2, 70);
+            ctx.shadowBlur = 0; // إعادة ضبط الظل
 
-            // رسالة البداية أو النهاية
+            // رسائل البداية والنهاية
             if (!gameStarted) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+                ctx.fillStyle = "rgba(15, 23, 42, 0.7)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 25px Arial";
-                ctx.fillText("اضغط أو المس الشاشة للبدء", canvas.width / 2, canvas.height / 2);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 28px 'Segoe UI'";
+                ctx.fillText("اضغط أو المس الشاشة للبدء والتحليق", canvas.width / 2, canvas.height / 2);
             } else if (isGameOver) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 30px Arial";
-                ctx.fillText("انتهت اللعبة!", canvas.width / 2, canvas.height / 2 - 20);
-                ctx.font = "bold 20px Arial";
-                ctx.fillText("اضغط لإعادة المحاولة", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.fillStyle = "#f87171";
+                ctx.font = "bold 35px 'Segoe UI'";
+                ctx.fillText("انتهت اللعبة!", canvas.width / 2, canvas.height / 2 - 30);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "20px 'Segoe UI'";
+                ctx.fillText("اضغط لإعادة المحاولة", canvas.width / 2, canvas.height / 2 + 20);
             }
         }
 
