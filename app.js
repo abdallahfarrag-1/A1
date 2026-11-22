@@ -4,7 +4,17 @@
   const LANGS = { en: 'English', ar: 'العربية', fr: 'Français', ur: 'اردو', bn: 'বাংলা', id: 'Bahasa Indonesia', tr: 'Türkçe', es: 'Español', ru: 'Русский' };
   const SERVICES = ['noorani', 'tajweed', 'hifz', 'recitation', 'revision'];
 
-  let sb = null, me = null, profile = null;
+  let sb = null, me = null, profile = null, DEMO = false;
+  const DEMO_TEACHERS = [
+    { id: 'demo1', full_name: 'Ahmad Hassan', country: 'Egypt', gender: 'male', bio: 'Azhar graduate with 10 years of experience teaching non-Arabic speakers, patient and step by step.', languages: ['en', 'ar'], services: ['noorani', 'tajweed', 'hifz'], price_per_hour: 8, years_experience: 10, has_ijazah: true, is_verified: true, avg_rating: 4.9, rating_count: 37 },
+    { id: 'demo2', full_name: 'Fatima Zahra', country: 'Morocco', gender: 'female', bio: 'Teaches sisters and children. Fluent in French and English.', languages: ['fr', 'en', 'ar'], services: ['noorani', 'recitation', 'revision'], price_per_hour: 6, years_experience: 6, has_ijazah: true, is_verified: true, avg_rating: 4.7, rating_count: 21 },
+    { id: 'demo3', full_name: 'Yusuf Rahman', country: 'Indonesia', gender: 'male', bio: 'Memorization plans for beginners, with weekly revision.', languages: ['id', 'en'], services: ['hifz', 'revision'], price_per_hour: 5, years_experience: 4, has_ijazah: false, is_verified: false, avg_rating: 4.3, rating_count: 9 },
+    { id: 'demo4', full_name: 'Omar Khalid', country: 'Jordan', gender: 'male', bio: '', languages: ['ar', 'tr'], services: ['tajweed'], price_per_hour: null, years_experience: 2, has_ijazah: false, is_verified: false, avg_rating: 0, rating_count: 0 }
+  ];
+  const DEMO_REVIEWS = [
+    { stars: 5, student_name: 'Daniel', student_country: 'UK', comment: 'Very patient teacher, I learned to read in two months.' },
+    { stars: 5, student_name: 'Aisha', student_country: 'USA', comment: 'Clear explanations and flexible times.' }
+  ];
 
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -56,6 +66,7 @@
         <button id="langBtn">${esc(t('lang_switch'))}</button>
       </nav>
     </div></header>
+    ${DEMO ? `<div style="background:#fbf3d4;color:#6b5600;text-align:center;padding:8px 12px;font-size:.85rem">${esc(t('demo_banner'))}</div>` : ''}
     <main><div class="container" id="view">${inner}</div></main>
     <footer>${esc(t('footer'))}</footer>`;
   }
@@ -133,7 +144,7 @@
       </div>
       <div id="grid" class="grid"><div class="loader">${esc(t('loading'))}</div></div>`);
 
-    const { data, error } = await sb.from('teachers_public').select('*')
+    const { data, error } = DEMO ? { data: DEMO_TEACHERS, error: null } : await sb.from('teachers_public').select('*')
       .order('avg_rating', { ascending: false }).order('rating_count', { ascending: false });
     if (error) { $('#grid').innerHTML = `<div class="err">${esc(error.message)}</div>`; return; }
 
@@ -152,6 +163,7 @@
   }
 
   async function contactTeacher(tc, btn) {
+    if (DEMO) return toast(t('demo_action'));
     if (!me) { sessionStorage.setItem('next', location.hash); location.hash = '#/login'; return; }
     if (profile?.role !== 'student') return toast(t('students_only'));
     btn.disabled = true;
@@ -173,7 +185,9 @@
 
   async function pTeacher(id) {
     mount(`<div class="loader">${esc(t('loading'))}</div>`);
-    const [{ data: tc }, { data: rv }] = await Promise.all([
+    const [{ data: tc }, { data: rv }] = DEMO
+      ? [{ data: DEMO_TEACHERS.find(x => x.id === id) }, { data: DEMO_REVIEWS }]
+      : await Promise.all([
       sb.from('teachers_public').select('*').eq('id', id).maybeSingle(),
       sb.from('reviews_public').select('*').eq('teacher_id', id).order('created_at', { ascending: false }).limit(50)
     ]);
@@ -219,6 +233,7 @@
       <div class="alt">${esc(t('no_account'))} <a href="#/signup">${esc(t('nav_signup'))}</a></div></div>`);
     $('#f').onsubmit = async e => {
       e.preventDefault();
+      if (DEMO) return toast(t('demo_action'));
       const f = new FormData(e.target), btn = $('button', e.target);
       btn.disabled = true;
       const { error } = await sb.auth.signInWithPassword({ email: f.get('email').trim(), password: f.get('password') });
@@ -253,6 +268,7 @@
       <div class="alt">${esc(t('have_account'))} <a href="#/login">${esc(t('login'))}</a></div></div>`);
     $('#f').onsubmit = async e => {
       e.preventDefault();
+      if (DEMO) return toast(t('demo_action'));
       const f = new FormData(e.target), btn = $('button', e.target);
       if (!validWa(f.get('whatsapp'))) return ($('#msg').innerHTML = `<div class="err">${esc(t('bad_whatsapp'))}</div>`);
       btn.disabled = true;
@@ -363,7 +379,7 @@
   }
 
   async function pDashboard() {
-    if (!me) { sessionStorage.setItem('next', '#/dashboard'); location.hash = '#/login'; return; }
+    if (!me) { if (!DEMO) sessionStorage.setItem('next', '#/dashboard'); location.hash = '#/login'; return; }
     mount(`<div class="loader">${esc(t('loading'))}</div>`);
     if (!profile) await loadSession((await sb.auth.getSession()).data.session);
     if (!profile) { $('#view').innerHTML = `<div class="err">${esc(t('error'))}</div>`; return; }
@@ -386,7 +402,7 @@
 
   /* ---------- Router ---------- */
   async function route() {
-    if (!sb) return;
+    if (!sb && !DEMO) return;
     const h = location.hash.replace(/^#\/?/, '');
     const [path, query] = h.split('?');
     const [p, arg] = path.split('/');
@@ -409,7 +425,9 @@
     setLang(l === 'ar' ? 'ar' : 'en');
 
     if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.includes('YOUR_PROJECT')) {
-      $('#app').innerHTML = `<div class="container"><div class="card form-card"><h2>${esc(t('setup_title'))}</h2><p style="text-align:center">${esc(t('setup_body'))}</p></div></div>`;
+      DEMO = true; // وضع المعاينة: الموقع يفتح ببيانات تجريبية حتى يتم ربط Supabase
+      window.addEventListener('hashchange', route);
+      route();
       return;
     }
     sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
