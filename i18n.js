@@ -36,6 +36,7 @@ const I18N = {
     svc_noorani: 'Noorani Qaidah', svc_tajweed: 'Tajweed', svc_hifz: 'Memorization (Hifz)',
     svc_recitation: 'Recitation correction', svc_revision: 'Revision (Muraja\'ah)',
     loading: 'Loading…', error: 'Something went wrong', back: '← Back',
+    demo_banner: 'Preview mode — sample data. Connect Supabase to go live.', demo_action: 'Preview mode: connect the database to enable this.',
     setup_title: 'Setup needed', setup_body: 'Open config.js and add your Supabase URL and anon key.',
     footer: 'Noor Hifz — connecting students with Quran teachers.',
     wa_msg: 'Assalamu alaykum {teacher}, I am {name} from {country}. I found you on Noor Hifz and I would like to start Quran memorization lessons.'
@@ -77,6 +78,7 @@ const I18N = {
     svc_noorani: 'القاعدة النورانية', svc_tajweed: 'التجويد', svc_hifz: 'الحفظ',
     svc_recitation: 'تصحيح التلاوة', svc_revision: 'المراجعة',
     loading: 'جارٍ التحميل…', error: 'حدث خطأ ما', back: '→ رجوع',
+    demo_banner: 'وضع المعاينة — بيانات تجريبية. اربط Supabase لتشغيل الموقع فعليًا.', demo_action: 'وضع المعاينة: اربط قاعدة البيانات لتفعيل هذا.',
     setup_title: 'مطلوب إعداد', setup_body: 'افتح ملف config.js وضع رابط Supabase والمفتاح العام.',
     footer: 'نور الحفظ — نربط الطلاب بمعلمي القرآن.',
     wa_msg: 'السلام عليكم {teacher}، أنا {name} من {country}. وجدتك على منصة نور الحفظ وأرغب في بدء دروس تحفيظ القرآن.'
