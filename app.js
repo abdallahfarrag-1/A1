@@ -1,7 +1,7 @@
 /* Noor Hifz — single-page app (vanilla JS + Supabase) */
 (() => {
   const CFG = window.APP_CONFIG || {};
-  const LANGS = { en: 'English', ar: 'العربية', fr: 'Français', ur: 'اردو', bn: 'বাংলা', id: 'Bahasa Indonesia', tr: 'Türkçe', es: 'Español', ru: 'Русский' };
+  const LANGS = { en: 'English', ar: 'العربية', fr: 'Français', ur: 'اردو', bn: 'বাংলা', id: 'Bahasa Indonesia', tr: 'Türkçe', es: 'Español', ru: 'Русский', de: 'Deutsch', zh: '中文', hi: 'हिन्दी', ms: 'Bahasa Melayu', fa: 'فارسی', pt: 'Português', it: 'Italiano', nl: 'Nederlands', ps: 'پښتو', ku: 'Kurdî', so: 'Soomaali', ha: 'Hausa', sw: 'Kiswahili', am: 'አማርኛ', ta: 'தமிழ்', ml: 'മലയാളം', te: 'తెలుగు', pa: 'ਪੰਜਾਬੀ', az: 'Azərbaycanca', uz: 'Oʻzbekcha', kk: 'Қазақша', tg: 'Тоҷикӣ', sq: 'Shqip', bs: 'Bosanski', th: 'ไทย', vi: 'Tiếng Việt', ja: '日本語', ko: '한국어', pl: 'Polski', uk: 'Українська', ro: 'Română', fil: 'Filipino' };
   const SERVICES = ['noorani', 'tajweed', 'hifz', 'recitation', 'revision'];
 
   let sb = null, me = null, profile = null, DEMO = false;
@@ -63,7 +63,7 @@
         ${loggedIn
           ? `<a href="#/dashboard">${esc(t('nav_dashboard'))}</a><button id="logout">${esc(t('nav_logout'))}</button>`
           : `<a href="#/login">${esc(t('nav_login'))}</a><a class="pill" href="#/signup">${esc(t('nav_signup'))}</a>`}
-        <button id="langBtn">${esc(t('lang_switch'))}</button>
+        <select id="langSel" aria-label="Language" style="width:auto;padding:6px 8px;font-size:.88rem;border-radius:10px;border:0;background:rgba(255,255,255,.16);color:#fff">${Object.entries(LANGS).filter(([k]) => I18N[k]).map(([k, v]) => `<option value="${k}" ${k === LANG ? 'selected' : ''} style="color:#16231c">${esc(v)}</option>`).join('')}</select>
       </nav>
     </div></header>
     ${DEMO ? `<div style="background:#fbf3d4;color:#6b5600;text-align:center;padding:8px 12px;font-size:.85rem">${esc(t('demo_banner'))}</div>` : ''}
@@ -74,7 +74,7 @@
   function mount(inner, opts = {}) {
     const app = $('#app');
     app.innerHTML = opts.hero ? shell('').replace('<main><div class="container" id="view"></div></main>', inner) : shell(inner);
-    $('#langBtn').onclick = () => { setLang(LANG === 'en' ? 'ar' : 'en'); route(); };
+    $('#langSel').onchange = e => { setLang(e.target.value); route(); };
     const lo = $('#logout');
     if (lo) lo.onclick = async () => { await sb.auth.signOut(); location.hash = '#/'; };
     window.scrollTo(0, 0);
@@ -422,7 +422,7 @@
   async function boot() {
     let l = 'en';
     try { l = localStorage.getItem('lang') || (navigator.language || 'en').slice(0, 2); } catch (e) {}
-    setLang(l === 'ar' ? 'ar' : 'en');
+    setLang(I18N[l] ? l : 'en');
 
     if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.includes('YOUR_PROJECT')) {
       DEMO = true; // وضع المعاينة: الموقع يفتح ببيانات تجريبية حتى يتم ربط Supabase
