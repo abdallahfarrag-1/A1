@@ -1,5 +1,5 @@
 // عند أي تعديل على ملفات الموقع: ارفع رقم VERSION هنا + رقم ?v= في index.html
-const VERSION = '2';
+const VERSION = '5';
 const CACHE = 'noor-hifz-v' + VERSION;
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon.svg'];
 
